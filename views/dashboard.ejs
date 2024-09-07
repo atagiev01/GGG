@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Welcome, <%= username %></h1>
+
+    <h2>Create New Category</h2>
+    <form id="categoryForm" enctype="multipart/form-data" onsubmit="createCategory(event)">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" class="form-control" id="description" name="description" required>
+        </div>
+        <div class="mb-3">
+            <label for="imgSrc" class="form-label">Image URL</label>
+            <input type="text" class="form-control" id="imgSrc" name="imgSrc" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+    
+
+    <a href="/logout">Logout</a>
+
+<script>
+    async function createCategory(event) {
+    event.preventDefault();
+
+    const formData = new FormData(document.getElementById('categoryForm'));
+    const button = document.querySelector('button[type="submit"]');
+    button.disabled = true; // Disable the button during submission
+
+    const response = await fetch('/data/categories', {
+        method: 'POST',
+        body: JSON.stringify({
+            title: formData.get('title'),
+            description: formData.get('description'),
+            imgSrc: formData.get('imgSrc')
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    button.disabled = false; // Re-enable the button
+
+    if (response.ok) {
+        const result = await response.json();
+        alert('Category created successfully!');
+        document.getElementById('categoryForm').reset(); // Reset the form fields
+        console.log(result);
+    } else {
+        const errorText = await response.text();
+        alert(`Failed to create category: ${errorText}`);
+    }
+}
+
+</script>
+</body>
+</html>

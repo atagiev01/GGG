@@ -1,0 +1,107 @@
+{
+	"categories": [
+		{
+			"id": 1,
+			"title": "Garabag",
+			"description": "Garabag bölgəsindəki otellər.",
+			"imgSrc": "https://silkrow.az/media/2018/11/08/garabag_resort_spa_naftalan_(7).jpg",
+			"items": [
+				{
+					"id": 1,
+					"title": "2 yataq otaqlı lüks otel",
+					"price": 180,
+					"description": "Geniş və rahat 2 yataq otaqlı otel.Geniş və rahat 2 yataq otaqlı otel.Geniş və rahat 2 yataq otaqlı otel.",
+					"imgSrc": "https://garabaghotel.az/photos/sliders/16232222801u6a1692jpg",
+					"room": [
+						{
+							"title": "Deluxe Suite",
+							"description": "Lüks və geniş bir otaq.",
+							"amenities": [
+								"Maksimal qonaq sayı: 3 və ya 2 yetkin + 1 uşaq",
+								"Yataq növü: 1 King və ya 2 Twin",
+								"Səs keçirməyən divarlar",
+								"Mərmər vanna otağı"
+							],
+							"imgSrc": [
+								"https://garabaghotel.az/photos/products/1598514376.dr_2.jpg",
+								"https://garabaghotel.az/photos/products/1598514376.dr_2.jpg"
+							]
+						}
+					]
+				},
+				{
+					"id": 2,
+					"title": "Spa və Sağlamlıq Mərkəzi",
+					"description": "Geniş spa və sağlamlıq xidmətləri ilə otel.",
+					"price": 150,
+					"imgSrc": "https://garabaghotel.az/photos/sliders/16232222801u6a1692jpg",
+					"room": [
+						{
+							"title": "Deluxe Suite",
+							"description": "Lüks və geniş bir otaq. Lüks və geniş bir otaq.Lüks və geniş bir otaq.Lüks və geniş bir otaq.Lüks və geniş bir otaq.Lüks və geniş bir otaq.Lüks və geniş bir otaq.Lüks və geniş bir otaq.Lüks və geniş bir otaq.Lüks və geniş bir otaq.Lüks və geniş bir otaq.",
+							"amenities": [
+								"King-size yataq",
+								"Geniş oturma sahəsi",
+								"Müasir təsisatlar"
+							],
+							"imgSrc": [
+								"https://garabaghotel.az/photos/sliders/16232222801u6a1692jpg",
+								"https://garabaghotel.az/photos/sliders/16232222801u6a1692jpg",
+								"https://garabaghotel.az/photos/sliders/16232222801u6a1692jpg",
+								"https://silkrow.az/media/2018/11/08/garabag_resort_spa_naftalan_(7).jpg"
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": 2,
+			"title": "Gashalti Health Hotel",
+			"description": "Bakıda yerləşən otellər.",
+			"imgSrc": "https://gashalti.az/photos/post/1627546358.1U6A0968.jpg",
+			"items": [
+				{
+					"id": 1,
+					"title": "Şəhər Mərkəzində Otel",
+					"description": "Bakının mərkəzində rahat otel.",
+					"imgSrc": "https://mysanatorium.com/upload/sanatorium/item/5b796cb134af7.jpg",
+					"room": [
+						{
+							"title": "Deluxe Suite",
+							"description": "Lüks və geniş bir otaq.",
+							"amenities": [
+								"King-size yataq",
+								"Geniş oturma sahəsi",
+								"Müasir təsisatlar"
+							],
+							"imgSrc": [
+								"https://gashalti.az/photos/post/1627546358.1U6A0968.jpg",
+								"https://gashalti.az/photos/post/1627546358.1U6A0969.jpg",
+								"https://gashalti.az/photos/post/1627546358.1U6A0970.jpg",
+								"https://gashalti.az/photos/post/1627546358.1U6A0971.jpg"
+							]
+						},
+						{
+							"title": "Standard Room",
+							"description": "Əsas otaq variantı.",
+							"amenities": [
+								"İki tək yataq",
+								"Kiçik masa",
+								"Wi-Fi"
+							],
+							"imgSrc": [
+								"https://gashalti.az/photos/post/1627546358.1U6A0972.jpg",
+								"https://gashalti.az/photos/post/1627546358.1U6A0973.jpg",
+								"https://gashalti.az/photos/post/1627546358.1U6A0974.jpg",
+								"https://gashalti.az/photos/post/1627546358.1U6A0975.jpg"
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"Garabag": "Garabag",
+	"Garabag bölgəsindəki otellər.": "Garabag bölgəsindəki otellər."
+}

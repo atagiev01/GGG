@@ -1,0 +1,84 @@
+{
+  "en": {
+    "homesection": [
+      {
+        "id": 1,
+        "title": "Hotel",
+        "description": "reservation",
+        "imgSrc": "../assets/img/undraw_travelers_re_y25a.svg"
+      }
+    ],
+    "categories": [
+      {
+        "id": 1,
+        "title": "Garabag",
+        "description": "Hotels in the Naftalan region.",
+        "imgSrc": "https://silkrow.az/media/2018/11/08/garabag_resort_spa_naftalan_(7).jpg",
+        "items": [
+          {
+            "id": 1,
+            "title": "Luxury Hotel with 2 Bedrooms",
+            "price": 180,
+            "description": "Spacious and comfortable hotel with 2 bedrooms.",
+            "imgSrc": "https://garabaghotel.az/photos/sliders/16232222801u6a1692jpg",
+            "room": [
+              {
+                "title": "Deluxe Suite",
+                "description": "A luxurious and spacious room.",
+                "amenities": [
+                  "Maximum occupancy: 3 or 2 adults + 1 child",
+                  "Bed type: 1 King or 2 Twins",
+                  "Marble bathroom"
+                ],
+                "imgSrc": [
+                  "https://garabaghotel.az/photos/products/1598514376.dr_2.jpg"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "az": {
+    "homesection": [
+      {
+        "id": 1,
+        "title": "Oteller",
+        "description": "Rezervasiya üçün",
+        "imgSrc": "https://silkrow.az/media/2018/11/08/garabag_resort_spa_naftalan_(7).jpg"
+      }
+    ],
+    "categories": [
+      {
+        "id": 1,
+        "title": "Qarabağ",
+        "description": "Garabag - Naftalan bölgəsindəki otellər.",
+        "imgSrc": "https://silkrow.az/media/2018/11/08/garabag_resort_spa_naftalan_(7).jpg",
+        "items": [
+          {
+            "id": 1,
+            "title": "2 yataq otaqlı lüks otel",
+            "price": 180,
+            "description": "Geniş və rahat 2 yataq otaqlı otel.",
+            "imgSrc": "https://garabaghotel.az/photos/sliders/16232222801u6a1692jpg",
+            "room": [
+              {
+                "title": "Deluxe Suite",
+                "description": "Lüks və geniş bir otaq.",
+                "amenities": [
+                  "Maksimal qonaq sayı: 3 və ya 2 yetkin + 1 uşaq",
+                  "Yataq növü: 1 King və ya 2 Twin",
+                  "Mərmər vanna otağı"
+                ],
+                "imgSrc": [
+                  "https://garabaghotel.az/photos/products/1598514376.dr_2.jpg"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

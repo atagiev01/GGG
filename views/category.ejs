@@ -1,0 +1,54 @@
+<!-- views/category.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= category.title %></title>
+  <link rel="stylesheet" href="../assets/css/bootstrap.css">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+<body>
+  <a href="/change-lang/en">English</a> | 
+    <a href="/change-lang/az">Azərbaycan</a>
+
+
+  <div class="page-section">
+
+    <div class="container">
+        <div class="row g-4">
+  
+
+            <% category.items.forEach(item => { %>
+     
+              <div class="col-lg-4 col-md-6 col-xs-12">
+                <a href="/item/<%= item.id %>">
+                  <div class="card cardHover">
+                    <img src="<%= item.imgSrc %>" class="card-img-top" alt="<%= item.title %>">
+                    <div class="card-body">
+                      <p class="card-text"><%= item.title %></p>
+                    </div>
+                     <div class="card-footer">
+                            <div class="card-price"><%= item.price %> <i class="fa-solid fa-manat-sign"></i></div>
+                            <div class="card-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i> 
+                            </div>
+                        </div>
+                  </div>
+                </a>
+        
+              </div>
+              <% }); %>
+        </div>
+    </div>
+  </div>
+
+
+
+</body>
+</html>
