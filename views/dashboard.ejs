@@ -7,63 +7,145 @@
     <link rel="stylesheet" href="../assets/css/bootstrap.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <script>
+        function toggleForm() {
+            const language = document.querySelector('input[name="language"]:checked').value;
+            document.getElementById('englishForm').style.display = language === 'en' ? 'block' : 'none';
+            document.getElementById('azerbaijaniForm').style.display = language === 'az' ? 'block' : 'none';
+        }
+
+        async function createCategory(event, language) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+
+    // Otaq imkanlarını alın və massivə çevirin
+    const amenities = data[`room_amenities_${language}`].split(',').map(item => item.trim());
+
+    const item = {
+        id: Date.now(), // Unikal ID
+        title: data[`title_${language}`],
+        price: 180, // Burada qiyməti hardan alacağınızı dəqiqləşdirin
+        description: data[`description_${language}`],
+        imgSrc: data[`imgSrc`],
+        room: [
+            {
+                title: data[`room_title_${language}`],
+                description: data[`room_description_${language}`],
+                amenities: amenities,
+                imgSrc: [data[`room_imgSrc_${language}`]],
+            }
+        ]
+    };
+
+    try {
+        const response = await fetch(`/data/categories/${language}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item),
+        });
+
+        if (!response.ok) {
+            throw new Error('Error creating category');
+        }
+
+        const newCategory = await response.json();
+        console.log('Category created:', newCategory);
+        event.target.reset(); // Formu sıfırlamaq üçün
+    } catch (error) {
+        console.error('Error creating category:', error);
+    }
+}
+
+
+    </script>
 </head>
 <body>
     <h1>Welcome, <%= username %></h1>
 
-    <h2>Create New Category</h2>
-    <form id="categoryForm" enctype="multipart/form-data" onsubmit="createCategory(event)">
+    <div>
+        <label>
+            <input type="radio" name="language" value="en" onclick="toggleForm()" checked> English
+        </label>
+        <label>
+            <input type="radio" name="language" value="az" onclick="toggleForm()"> Azerbaijani
+        </label>
+    </div>
+
+    <form id="englishForm" onsubmit="createCategory(event, 'en')" style="display: block;">
+        <h3>English Category</h3>
         <div class="mb-3">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" name="title" required>
+            <label for="title_en" class="form-label">Title (English)</label>
+            <input type="text" class="form-control" id="title_en" name="title_en" required>
         </div>
         <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <input type="text" class="form-control" id="description" name="description" required>
+            <label for="description_en" class="form-label">Description (English)</label>
+            <input type="text" class="form-control" id="description_en" name="description_en" required>
         </div>
         <div class="mb-3">
             <label for="imgSrc" class="form-label">Image URL</label>
             <input type="text" class="form-control" id="imgSrc" name="imgSrc" required>
         </div>
-        <button type="submit" class="btn btn-primary">Create</button>
+    
+        <h4>Room Details</h4>
+        <div class="mb-3">
+            <label for="room_title_en" class="form-label">Room Title (English)</label>
+            <input type="text" class="form-control" id="room_title_en" name="room_title_en" required>
+        </div>
+        <div class="mb-3">
+            <label for="room_description_en" class="form-label">Room Description (English)</label>
+            <input type="text" class="form-control" id="room_description_en" name="room_description_en" required>
+        </div>
+        <div class="mb-3">
+            <label for="room_amenities_en" class="form-label">Room Amenities (Comma separated)</label>
+            <input type="text" class="form-control" id="room_amenities_en" name="room_amenities_en" required>
+        </div>
+        <div class="mb-3">
+            <label for="room_imgSrc_en" class="form-label">Room Image URL</label>
+            <input type="text" class="form-control" id="room_imgSrc_en" name="room_imgSrc_en" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create English Category</button>
+    </form>
+    
+    <form id="azerbaijaniForm" onsubmit="createCategory(event, 'az')" style="display: none;">
+        <h3>Azerbaijani Category</h3>
+        <div class="mb-3">
+            <label for="title_az" class="form-label">Title (Azerbaijani)</label>
+            <input type="text" class="form-control" id="title_az" name="title_az" required>
+        </div>
+        <div class="mb-3">
+            <label for="description_az" class="form-label">Description (Azerbaijani)</label>
+            <input type="text" class="form-control" id="description_az" name="description_az" required>
+        </div>
+        <div class="mb-3">
+            <label for="imgSrc_az" class="form-label">Image URL</label>
+            <input type="text" class="form-control" id="imgSrc_az" name="imgSrc" required>
+        </div>
+    
+        <h4>Otaq Detalları</h4>
+        <div class="mb-3">
+            <label for="room_title_az" class="form-label">Otaq Başlığı (Azerbaijani)</label>
+            <input type="text" class="form-control" id="room_title_az" name="room_title_az" required>
+        </div>
+        <div class="mb-3">
+            <label for="room_description_az" class="form-label">Otaq Təsviri (Azerbaijani)</label>
+            <input type="text" class="form-control" id="room_description_az" name="room_description_az" required>
+        </div>
+        <div class="mb-3">
+            <label for="room_amenities_az" class="form-label">Otaq İmkanları (Virgüllə ayrılmış)</label>
+            <input type="text" class="form-control" id="room_amenities_az" name="room_amenities_az" required>
+        </div>
+        <div class="mb-3">
+            <label for="room_imgSrc_az" class="form-label">Otaq Şəkil URL</label>
+            <input type="text" class="form-control" id="room_imgSrc_az" name="room_imgSrc" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Azerbaijani Category</button>
     </form>
     
 
     <a href="/logout">Logout</a>
-
-<script>
-    async function createCategory(event) {
-    event.preventDefault();
-
-    const formData = new FormData(document.getElementById('categoryForm'));
-    const button = document.querySelector('button[type="submit"]');
-    button.disabled = true; // Disable the button during submission
-
-    const response = await fetch('/data/categories', {
-        method: 'POST',
-        body: JSON.stringify({
-            title: formData.get('title'),
-            description: formData.get('description'),
-            imgSrc: formData.get('imgSrc')
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-
-    button.disabled = false; // Re-enable the button
-
-    if (response.ok) {
-        const result = await response.json();
-        alert('Category created successfully!');
-        document.getElementById('categoryForm').reset(); // Reset the form fields
-        console.log(result);
-    } else {
-        const errorText = await response.text();
-        alert(`Failed to create category: ${errorText}`);
-    }
-}
-
-</script>
 </body>
 </html>

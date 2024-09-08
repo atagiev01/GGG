@@ -1,17 +1,20 @@
 import express from 'express';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs/promises'; // Use promises-based fs
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config(); // Load environment variables from .env
 
 // Get current directory name for ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 // Middleware to parse JSON and URL-encoded form data
 app.use(express.json());
@@ -21,239 +24,26 @@ app.set('view engine', 'ejs');
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-const jsonDataPath = path.join(__dirname, 'data', 'categories.json');
-fs.readFile(jsonDataPath, (err, data) => {
-  if (err) {
-      // If the file does not exist, create it with an initial structure
-      if (err.code === 'ENOENT') {
-          const initialData = {
-              en: { categories: [] },
-              az: { categories: [] }
-          };
-          fs.writeFile(jsonDataPath, JSON.stringify(initialData, null, 2), (writeErr) => {
-              if (writeErr) {
-                  return res.status(500).send('Error creating file.');
-              }
-              // Proceed to push the new category
-              jsonData = initialData;
-              jsonData.en.categories.push(newCategory);
-              jsonData.az.categories.push(newCategory);
-              fs.writeFile(jsonDataPath, JSON.stringify(jsonData, null, 2), (writeErr) => {
-                  if (writeErr) {
-                      return res.status(500).send('Error writing file.');
-                  }
-                  res.json(newCategory);
-              });
-          });
-      } else {
-          return res.status(500).send('Error reading file.');
-      }
-  }
-  // Continue with the existing logic to parse and write data
-});
-
-app.post('/data/categories', (req, res) => {
-  let body = '';
-
-  req.on('data', chunk => {
-      body += chunk.toString(); // Collect the request data
-  });
-
-  req.on('end', () => {
-      const newCategory = JSON.parse(body);
-      newCategory.id = Date.now(); // Unique id based on timestamp
-      newCategory.items = []; // New category items array
-
-      const jsonDataPath = path.join(__dirname, 'data.json');
-
-      fs.readFile(jsonDataPath, (err, data) => {
-          if (err) {
-              // Check if the file doesn't exist
-              if (err.code === 'ENOENT') {
-                  // Initialize with empty structure
-                  const initialData = { en: { categories: [] }, az: { categories: [] } };
-                  fs.writeFile(jsonDataPath, JSON.stringify(initialData, null, 2), (writeErr) => {
-                      if (writeErr) {
-                          return res.status(500).send('Error creating file.');
-                      }
-                      // Proceed to add the new category
-                      initialData.en.categories.push(newCategory);
-                      initialData.az.categories.push(newCategory);
-                      fs.writeFile(jsonDataPath, JSON.stringify(initialData, null, 2), (writeErr) => {
-                          if (writeErr) {
-                              return res.status(500).send('Error writing file.');
-                          }
-                          res.json(newCategory);
-                      });
-                  });
-              } else {
-                  return res.status(500).send('Error reading file.');
-              }
-          } else {
-              const jsonData = JSON.parse(data);
-              jsonData.en.categories.push(newCategory);
-              jsonData.az.categories.push(newCategory);
-
-              fs.writeFile(jsonDataPath, JSON.stringify(jsonData, null, 2), (err) => {
-                  if (err) {
-                      return res.status(500).send('Error writing file.');
-                  }
-                  res.json(newCategory);
-              });
-          }
-      });
-  });
-});
-
-
-
-// Modified saveData to debug JSON writing
-function saveData(data) {
-  return new Promise((resolve, reject) => {
-    const filePath = path.join(__dirname, 'data', 'categories.json');
-    fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8', (err) => {
-      if (err) {
-        console.error('Error saving JSON file:', err);
-        return reject(err);
-      }
-      resolve();
-    });
-  });
-}
-
-
-
-
-// Dummy user data - consider using a database for real applications
-const users = [
-  { username: 'admin', password: bcrypt.hashSync('12', 2) }
-];
-
-app.get('/login', (req, res) => {
-  res.render('login'); // 'login.ejs' şablonunu render edir
-});
-
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-
-  const user = users.find(u => u.username === username);
-
-  if (!user || !bcrypt.compareSync(password, user.password)) {
-    return res.status(401).send('Invalid credentials');
-  }
-
-  const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET || 'YOUR_SECRET_KEY', { expiresIn: '1h' });
-  res.cookie('token', token); // Token-i cookie-yə əlavə edin
-  res.redirect('/dashboard'); // İstifadəçini dashboard-a yönləndirin
-});
-app.get('/logout', (req, res) => {
-  res.clearCookie('token'); // Tokeni silin
-  res.redirect('/login'); // İstifadəçini giriş səhifəsinə yönləndirin
-});
-
-
-app.get('/dashboard', (req, res) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).send('Unauthorized: No token provided');
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET || 'YOUR_SECRET_KEY', (err, decoded) => {
-    if (err) {
-      return res.status(401).send('Unauthorized: Invalid token');
-    }
-
-    // Token etibarlıdır, istifadəçi məlumatını əldə edin
-    res.render('dashboard', { username: decoded.username }); // dashboard.ejs şablonunu render edin
-  });
-});
-
-// Middleware to check if the user is authenticated
-app.get('/dashboard', isAuthenticated, (req, res) => {
-  res.render('dashboard', { username: req.user.username });
-});
-
-function isAuthenticated(req, res, next) {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.redirect('/'); // Ana səhifəyə yönləndir
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET || 'YOUR_SECRET_KEY', (err, decoded) => {
-    if (err) {
-      return res.redirect('/'); // Ana səhifəyə yönləndir
-    }
-
-    req.user = decoded; // İstifadəçi məlumatını req obyektinə əlavə et
-    next(); // Növbəti middleware-ə keç
-  });
-}
-
-
-// Apply authentication middleware to protected routes
-app.use('/dashboard', isAuthenticated);
-app.use('/logout', isAuthenticated);
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something went wrong!');
-});
-
-
 // Load JSON data
 let cachedData;
 
 async function loadData() {
   if (!cachedData) {
-    cachedData = await readJSONFile(path.join(__dirname, 'data', 'categories.json'));
+      const filePath = path.join(__dirname, 'data', 'categories.json');
+      try {
+          const data = await fs.readFile(filePath, 'utf8');
+          cachedData = JSON.parse(data);
+      } catch (err) {
+          if (err.code === 'ENOENT') {
+              cachedData = { categories: [] }; // Yalnız bir dildə
+              await fs.writeFile(filePath, JSON.stringify(cachedData, null, 2), 'utf8');
+          } else {
+              throw new Error('Error reading or parsing JSON file');
+          }
+      }
   }
   return cachedData;
 }
-
-function readJSONFile(filePath) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        return reject('Error reading JSON file');
-      }
-      try {
-        const jsonData = JSON.parse(data);
-        resolve(jsonData);
-      } catch (parseError) {
-        reject('Error parsing JSON file');
-      }
-    });
-  });
-}
-
-// Middleware to handle language settings
-app.use((req, res, next) => {
-  const lang = req.cookies.lang || 'en'; // Default language is 'en'
-  res.locals.lang = lang; // Store language in response locals
-  next();
-});
-
-app.get('/', async (req, res) => {
-  try {
-    const lang = req.query.lang || req.cookies.lang || 'en';
-    const data = await loadData(); // Load cached data or read from file
-    const homesection = data[lang]?.homesection || []; // Use optional chaining
-    const categories = data[lang]?.categories || [];
-
-    if (!homesection.length) {
-      console.error('Homesection is missing in data');
-    }
-
-    // Render the template with both categories and homesection data
-    res.render('index', { homesection, categories, lang });
-  } catch (error) {
-    console.error('Error loading data:', error);
-    res.status(500).send('Error loading data');
-  }
-});
-
 app.get('/category/:id', async (req, res) => {
   const lang = req.query.lang || req.cookies.lang || 'az';
   const categoryId = parseInt(req.params.id, 10);
@@ -309,13 +99,150 @@ app.get('/item/:id', async (req, res) => {
     res.status(500).send('Error loading item data');
   }
 });
+async function saveData(data) {
+  const filePath = path.join(__dirname, 'data', 'categories.json');
+  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8'); // Promises-based fs istifadə
+}
 
-app.get('/change-lang/:lang', (req, res) => {
-  const newLang = req.params.lang;
-  res.cookie('lang', newLang); // Set the cookie
-  res.redirect('back'); // Redirect back to the previous page
+
+async function createCategory(event) {
+  event.preventDefault(); // Formun göndərilməsini dayandırır
+
+  const formData = new FormData(document.getElementById('categoryForm'));
+  const data = Object.fromEntries(formData.entries());
+
+  try {
+      const response = await fetch('/data/categories', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json', // Başlıqları düzgün təyin edin
+          },
+          body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+          throw new Error('Error creating category');
+      }
+
+      const newCategory = await response.json();
+      console.log('Category created:', newCategory);
+  } catch (error) {
+      console.error('Error creating category:', error);
+  }
+}
+
+app.get('/data/categories', async (req, res) => {
+  try {
+    const data = await loadData();
+    console.log(data); // Veriyi kontrol etmek için
+    res.json(data);
+  } catch (err) {
+    console.error('Error reading JSON file:', err);
+    res.status(500).send('Server error');
+  }
 });
 
+
+app.post('/data/categories/:language', async (req, res) => {
+  const { language } = req.params;
+  const newCategory = {
+      id: Date.now(),
+      title: req.body.title,
+      description: req.body.description,
+      imgSrc: req.body.imgSrc,
+      items: [req.body], // 'items' hissəsinə yeni məlumatı əlavə edin
+  };
+
+  try {
+      const jsonData = await loadData();
+      jsonData[language].categories.push(newCategory);
+      await saveData(jsonData); // saveData funksiyasını istifadə edin
+      res.status(201).json(newCategory);
+  } catch (error) {
+      console.error('Error saving category:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+
+
+
+
+// Authentication logic
+const users = [{ username: 'admin', password: bcrypt.hashSync('12', 2) }];
+
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    const user = users.find(u => u.username === username);
+
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+        return res.status(401).send('Invalid credentials');
+    }
+
+    const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET || 'YOUR_SECRET_KEY', { expiresIn: '1h' });
+    res.cookie('token', token);
+    res.redirect('/dashboard');
+});
+
+app.get('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.redirect('/login');
+});
+
+// Middleware for authentication
+function isAuthenticated(req, res, next) {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.redirect('/login');
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET || 'YOUR_SECRET_KEY', (err, decoded) => {
+        if (err) {
+            return res.redirect('/login');
+        }
+        req.user = decoded;
+        next();
+    });
+}
+
+app.use('/dashboard', isAuthenticated);
+
+app.get('/dashboard', (req, res) => {
+    res.render('dashboard', { username: req.user.username });
+});
+
+// Load and render the main index page
+app.get('/', async (req, res) => {
+    try {
+        const lang = req.query.lang || req.cookies.lang || 'en';
+        const data = await loadData();
+        const homesection = data[lang]?.homesection || [];
+        const categories = data[lang]?.categories || [];
+        res.render('index', { homesection, categories, lang });
+    } catch (error) {
+        console.error('Error loading data:', error);
+        res.status(500).send('Error loading data');
+    }
+});
+
+// Language change endpoint
+app.get('/change-lang/:lang', (req, res) => {
+    const newLang = req.params.lang;
+    res.cookie('lang', newLang);
+    res.redirect('back');
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something went wrong!');
+});
+
+// Start the server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+    console.log(`Server running at http://localhost:${port}/`);
 });
